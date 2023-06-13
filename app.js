@@ -8,6 +8,7 @@ const gelirinizTd = document.getElementById("geliriniz")
 let harcamaYeri = document.getElementById("input-harcama")
 let harcamatarihi = document.getElementById("input-zaman")
 let harcamaMiktari = document.getElementById("input-harcama-miktari")
+const giderinizTd = document.getElementById("gideriniz")
 
 
 
@@ -44,7 +45,7 @@ buttonKaydet.addEventListener("click", (e) => {
    
     
     let objectGelir = {
-        gelir:valueGelir,
+        id: new Date().getTime(),
         yer:harcamaYeri.value,
         tarih:harcamatarihi.value,
         miktar:harcamaMiktari.value,
@@ -54,9 +55,24 @@ buttonKaydet.addEventListener("click", (e) => {
     localStorage.setItem("harcamalar", JSON.stringify(objectArr));
 
     goster();
+    geliriGuncelle();
     
 })
 
+giderGoster.addEventListener("click", (e) => {
+    if (e.target.classList.contains("fa-trash-can")){
+        e.target.parentElement.parentElement.remove();
+
+        const id = e.target.id
+        console.log(id);
+
+        objectArr = objectArr.filter((harcama) => harcama.id != id)
+
+        localStorage.setItem("harcamalar", JSON.stringify(objectArr))
+    }
+    geliriGuncelle();
+    
+})
 
 
 
@@ -100,13 +116,25 @@ function goster(){
         let tdIslem = createTdElement();
         let tiIslem = document.createElement("i")
         tiIslem.classList.add("fa-solid", "fa-trash-can", "text-danger") 
+        tiIslem.setAttribute("type", "button");
+        tiIslem.id = objectArr[i].id;
         tdIslem.appendChild(tiIslem)
         trElement.appendChild(tdIslem);
         
         giderGoster.appendChild(trElement);
+       
     }
+    geliriGuncelle();
 }
 
 function geliriGuncelle(){
+    
+    let giderler = objectArr.reduce((toplam,harcama) => {
+        
+        toplam = Number(toplam )+ Number(harcama.miktar)
+        return toplam
+    },0)
+      
     gelirinizTd.innerText = valueGelir;
+    giderinizTd.innerText = giderler;
 }
